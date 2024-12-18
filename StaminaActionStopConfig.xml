@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ConfigLayoutSchema.xsd">
+    <hlayout>
+        <vlayout border="true">
+            <toggle id="valueToggle">
+                <contentId>stamina.toggle.content01</contentId>
+                <tooltip>stamina.toggle.tooltip01</tooltip>
+            </toggle>
+            <topic>topic01</topic>
+            <slider id="slider01" min="-9999" max="9999" buttons="true">0</slider>
+            <topic>topic02</topic>
+            <one_choice id="dropdown01" type="dropdown">
+                <choice>
+                    <contentId>1</contentId>
+                </choice>
+                <choice>
+                    <contentId>10</contentId>
+                </choice>
+                <choice>
+                    <contentId>100</contentId>
+                </choice>
+                <choice>
+                    <contentId>1000</contentId>
+                </choice>
+            </one_choice>
+        </vlayout>
+        <vlayout border="true">
+            <toggle id="phaseToggle">
+                <contentId>stamina.toggle.content02</contentId>
+                <tooltip>stamina.toggle.tooltip02</tooltip>
+            </toggle>
+            <topic>topic03</topic>
+            <one_choice id="dropdown02" type="dropdown">
+                <choice>
+                    <contentId>dropdown.item01</contentId>
+                </choice>
+                <choice>
+                    <contentId>dropdown.item02</contentId>
+                </choice>
+            </one_choice>
+        </vlayout>
+    </hlayout>
+</config>
