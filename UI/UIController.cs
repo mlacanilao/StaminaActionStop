@@ -20,12 +20,15 @@ namespace StaminaActionStop.UI
                     var controller = ModOptionController.Register(guid: ModInfo.Guid, tooptipId: "mod.tooltip");
                     
                     var assemblyLocation = Path.GetDirectoryName(path: Assembly.GetExecutingAssembly().Location);
-                    var xmlPath = Path.Combine(path1: assemblyLocation, path2: "StaminaActionStopConfig.xml");
-                    StaminaActionStopConfig.InitializeXmlPath(xmlPath: xmlPath);
-            
-                    var xlsxPath = Path.Combine(path1: assemblyLocation, path2: "translations.xlsx");
-                    StaminaActionStopConfig.InitializeTranslationXlsxPath(xlsxPath: xlsxPath);
-                    
+                    if (assemblyLocation != null)
+                    {
+                        var xmlPath = Path.Combine(path1: assemblyLocation, path2: "StaminaActionStopConfig.xml");
+                        StaminaActionStopConfig.InitializeXmlPath(xmlPath: xmlPath);
+                        
+                        var xlsxPath = Path.Combine(path1: assemblyLocation, path2: "translations.xlsx");
+                        StaminaActionStopConfig.InitializeTranslationXlsxPath(xlsxPath: xlsxPath);
+                    }
+
                     if (File.Exists(path: StaminaActionStopConfig.XmlPath))
                     {
                         using (StreamReader sr = new StreamReader(path: StaminaActionStopConfig.XmlPath))
@@ -85,7 +88,7 @@ namespace StaminaActionStop.UI
                 var dropdown02 = builder.GetPreBuild<OptDropdown>(id: "dropdown02");
                 dropdown02.OnValueChanged += d =>
                 {
-                    if (dropdownMapping.TryGetValue(d, out int mappedValue))
+                    if (dropdownMapping.TryGetValue(key: d, value: out int mappedValue))
                     {
                         StaminaActionStopConfig.staminaThresholdPhase.Value = mappedValue;
                     }
