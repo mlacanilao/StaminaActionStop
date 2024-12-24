@@ -35,7 +35,7 @@
 
     [img]https://steamuserimages-a.akamaihd.net/ugc/5163648045308568/FF3031BA41D0C9D137FD99DAF54E949FF7555FEE/?imw=5000&amp;imh=5000&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=false.png[/img]
 
-    Supports Game Version: 0.23.55
+    Supports Game Version: 0.23.65
 
     [h1] 注意 [/h1]
     複数のアイテムを一度にクラフトする場合（例：999個の釣り餌）、消費スタミナが一度にしきい値を超えることがあり、このMODがアクションを停止しない場合があります。
@@ -61,9 +61,9 @@
 
     [img]https://steamuserimages-a.akamaihd.net/ugc/5163648045310658/2B3456088F6E089470A93787586CE2082AAF277C/?imw=5000&amp;imh=5000&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=false.png[/img]
 
-    対応ゲームバージョン: 0.23.55
+    対応ゲームバージョン: 0.23.65
   </description>
   <tags>QoL</tags>
   <visibility>Public</visibility>
-  <version>0.23.55</version>
+  <version>0.23.65</version>
 </Meta>

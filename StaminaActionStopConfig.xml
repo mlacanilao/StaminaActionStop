@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ConfigLayoutSchema.xsd">
-    <hlayout>
-        <vlayout border="true">
+    <hlayout id="hlayout01">
+        <vlayout id="vlayout01" border="true">
             <toggle id="valueToggle">
                 <contentId>stamina.toggle.content01</contentId>
                 <tooltip>stamina.toggle.tooltip01</tooltip>
@@ -24,7 +24,7 @@
                 </choice>
             </one_choice>
         </vlayout>
-        <vlayout border="true">
+        <vlayout id="vlayout02" border="true">
             <toggle id="phaseToggle">
                 <contentId>stamina.toggle.content02</contentId>
                 <tooltip>stamina.toggle.tooltip02</tooltip>

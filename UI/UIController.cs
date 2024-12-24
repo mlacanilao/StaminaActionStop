@@ -49,6 +49,15 @@ namespace StaminaActionStop.UI
         {
             controller.OnBuildUI += builder =>
             {
+                var hlayout = builder.GetPreBuild<OptHLayout>(id: "hlayout01");
+                hlayout.Base.childForceExpandHeight = false;
+                
+                var vlayout01 = builder.GetPreBuild<OptVLayout>(id: "vlayout01");
+                vlayout01.Base.childForceExpandHeight = false;
+                
+                var vlayout02 = builder.GetPreBuild<OptVLayout>(id: "vlayout02");
+                vlayout02.Base.childForceExpandHeight = false;
+                
                 var valueToggle = builder.GetPreBuild<OptToggle>(id: "valueToggle");
                 valueToggle.Checked = StaminaActionStopConfig.enableThresholdValue.Value;
                 valueToggle.OnValueChanged += isChecked =>

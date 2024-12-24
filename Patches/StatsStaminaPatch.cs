@@ -6,32 +6,36 @@ namespace StaminaActionStop.Patches
     {
         public static void ModPostfix(StatsStamina __instance)
         {
-            if (BaseStats.CC.IsPC)
+            if (BaseStats.CC?.IsPC == false)
             {
-                var currentAI = BaseStats.CC.ai;
-                
-                if (currentAI is AI_UseCrafter crafterAI)
-                {
-                    if (crafterAI.num >= 2) return;
-                }
+                return;
+            }
+            
+            var currentAI = BaseStats.CC?.ai;
 
-                if (StaminaActionStopConfig.enableThresholdValue.Value &&
-                    __instance.value <= StaminaActionStopConfig.staminaThresholdValue.Value)
-                {
-                    if (currentAI != null && currentAI.IsRunning)
-                    {
-                        currentAI.TryCancel(c: null);
-                    }
+            switch (currentAI)
+            {
+                case null:
+                case AI_UseCrafter crafterAI when crafterAI.num >= 2:
                     return;
-                }
+            }
 
-                if (StaminaActionStopConfig.enableThresholdPhase.Value &&
-                    __instance.GetPhase() <= StaminaActionStopConfig.staminaThresholdPhase.Value)
+            if (StaminaActionStopConfig.enableThresholdValue.Value &&
+                __instance.value <= StaminaActionStopConfig.staminaThresholdValue?.Value)
+            {
+                if (currentAI.IsRunning)
                 {
-                    if (currentAI != null && currentAI.IsRunning)
-                    {
-                        currentAI.TryCancel(c: null);
-                    }
+                    currentAI.TryCancel(c: null);
+                }
+                return;
+            }
+
+            if (StaminaActionStopConfig.enableThresholdPhase.Value &&
+                __instance.GetPhase() <= StaminaActionStopConfig.staminaThresholdPhase?.Value)
+            {
+                if (currentAI.IsRunning)
+                {
+                    currentAI.TryCancel(c: null);
                 }
             }
         }
