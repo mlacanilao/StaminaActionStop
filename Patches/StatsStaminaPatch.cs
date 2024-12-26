@@ -20,7 +20,12 @@ namespace StaminaActionStop.Patches
                     return;
             }
 
-            if (StaminaActionStopConfig.enableThresholdValue.Value &&
+            if (currentAI is AI_Eat || currentAI is AI_PlayMusic)
+            {
+                return;
+            }
+
+            if (StaminaActionStopConfig.enableThresholdValue?.Value == true &&
                 __instance.value <= StaminaActionStopConfig.staminaThresholdValue?.Value)
             {
                 if (currentAI.IsRunning)
@@ -30,7 +35,7 @@ namespace StaminaActionStop.Patches
                 return;
             }
 
-            if (StaminaActionStopConfig.enableThresholdPhase.Value &&
+            if (StaminaActionStopConfig.enableThresholdPhase?.Value == true &&
                 __instance.GetPhase() <= StaminaActionStopConfig.staminaThresholdPhase?.Value)
             {
                 if (currentAI.IsRunning)
