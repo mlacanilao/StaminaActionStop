@@ -58,6 +58,20 @@ namespace StaminaActionStop.UI
                 var vlayout02 = builder.GetPreBuild<OptVLayout>(id: "vlayout02");
                 vlayout02.Base.childForceExpandHeight = false;
                 
+                var enablePreActionCheckToggle = builder.GetPreBuild<OptToggle>(id: "enablePreActionCheckToggle");
+                enablePreActionCheckToggle.Checked = StaminaActionStopConfig.enablePreActionCheck.Value;
+                enablePreActionCheckToggle.OnValueChanged += isChecked =>
+                {
+                    StaminaActionStopConfig.enablePreActionCheck.Value = isChecked;
+                };
+                
+                var enableStaminaCheckToggle = builder.GetPreBuild<OptToggle>(id: "enableStaminaCheckToggle");
+                enableStaminaCheckToggle.Checked = StaminaActionStopConfig.enableStaminaCheck.Value;
+                enableStaminaCheckToggle.OnValueChanged += isChecked =>
+                {
+                    StaminaActionStopConfig.enableStaminaCheck.Value = isChecked;
+                };
+                
                 var valueToggle = builder.GetPreBuild<OptToggle>(id: "valueToggle");
                 valueToggle.Checked = StaminaActionStopConfig.enableThresholdValue.Value;
                 valueToggle.OnValueChanged += isChecked =>
@@ -101,6 +115,60 @@ namespace StaminaActionStop.UI
                     {
                         StaminaActionStopConfig.staminaThresholdPhase.Value = mappedValue;
                     }
+                };
+                
+                var enableHpThresholdValueToggle = builder.GetPreBuild<OptToggle>(id: "enableHpThresholdValueToggle");
+                enableHpThresholdValueToggle.Checked = StaminaActionStopConfig.enableHpThresholdValue.Value;
+                enableHpThresholdValueToggle.OnValueChanged += isChecked =>
+                {
+                    StaminaActionStopConfig.enableHpThresholdValue.Value = isChecked;
+                };
+                
+                var slider02 = builder.GetPreBuild<OptSlider>(id: "slider02");
+                slider02.Title = StaminaActionStopConfig.hpThresholdValue.Value.ToString();
+                if (EClass.core.IsGameStarted == true)
+                {
+                    slider02.Max = (float)EClass.pc?.MaxHP;
+                }
+                slider02.Value = StaminaActionStopConfig.hpThresholdValue.Value;
+                slider02.Step = 1;
+                slider02.OnValueChanged += v =>
+                {
+                    slider02.Title = v.ToString();
+                    StaminaActionStopConfig.hpThresholdValue.Value = (int)v;
+                };
+                
+                var dropdown03 = builder.GetPreBuild<OptDropdown>(id: "dropdown03");
+                dropdown03.OnValueChanged += d =>
+                {
+                    slider02.Step = Mathf.Pow(f: 10, p: d);
+                };
+                
+                var enableMpThresholdValueToggle = builder.GetPreBuild<OptToggle>(id: "enableMpThresholdValueToggle");
+                enableMpThresholdValueToggle.Checked = StaminaActionStopConfig.enableManaThresholdValue.Value;
+                enableMpThresholdValueToggle.OnValueChanged += isChecked =>
+                {
+                    StaminaActionStopConfig.enableManaThresholdValue.Value = isChecked;
+                };
+                
+                var slider03 = builder.GetPreBuild<OptSlider>(id: "slider03");
+                slider03.Title = StaminaActionStopConfig.manaThresholdValue.Value.ToString();
+                if (EClass.core.IsGameStarted == true)
+                {
+                    slider03.Max = (float)EClass.pc?.mana?.max;
+                }
+                slider03.Value = StaminaActionStopConfig.manaThresholdValue.Value;
+                slider03.Step = 1;
+                slider03.OnValueChanged += v =>
+                {
+                    slider03.Title = v.ToString();
+                    StaminaActionStopConfig.manaThresholdValue.Value = (int)v;
+                };
+                
+                var dropdown04 = builder.GetPreBuild<OptDropdown>(id: "dropdown04");
+                dropdown04.OnValueChanged += d =>
+                {
+                    slider03.Step = Mathf.Pow(f: 10, p: d);
                 };
             };
         }

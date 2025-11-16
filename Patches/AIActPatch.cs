@@ -3,18 +3,18 @@ using StaminaActionStop.Utils;
 
 namespace StaminaActionStop.Patches
 {
-    public static class StatsStaminaPatch
+    internal static class AIActPatch
     {
-        public static void ModPostfix(StatsStamina __instance)
+        public static void StartPostfix(AIAct __instance)
         {
-            bool enableStaminaCheck = StaminaActionStopConfig.enableStaminaCheck?.Value ?? true;
+            bool enablePreActionCheck = StaminaActionStopConfig.enablePreActionCheck?.Value ?? false;
 
-            if (enableStaminaCheck == false)
+            if (enablePreActionCheck == false)
             {
                 return;
             }
             
-            var owner = __instance?.Owner;
+            var owner = __instance?.owner;
             if (owner == null || owner.IsPC == false)
             {
                 return;

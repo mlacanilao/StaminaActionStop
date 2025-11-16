@@ -12,12 +12,25 @@
 
     [h1] Features [/h1]
     [list]
-    [*]Stops actions automatically when the player's stamina drops to the specified threshold value.
-    [*]Allows phase-based thresholds with support for "Tired" (1) and "Exhausted" (0) phases.
-    [*]Priority is given to the exact stamina threshold value if enabled.
+    [*]Action safety protects you before or during the action when stamina is low.
+    [*]At least one of these modes must be enabled for the mod to stop actions.
+    [*][b]Two Action Safety Modes[/b]
+      [list]
+      [*]Stops actions [u]before they start[/u] when stamina is low. Recommended for permadeath or hardcore play. May stop some actions that do not consume stamina.
+      [*]Stops actions [u]during the action[/u] when stamina drops mid-operation.
+      [/list]
+    
+    [*][b]Threshold Protections[/b]
+      [list]
+      [*]Threshold protections automatically stop actions when certain limits are reached.
+      [*]When multiple protections are enabled, the highest-priority condition will stop actions first.
+      [*](Priority 1) Stamina Value Threshold: Stop when stamina reaches the specified value threshold.
+      [*](Priority 2) Stamina Phase Threshold: Stop when stamina reaches the specified phase threshold.
+      [*](Priority 3) HP Threshold: Stop when stamina becomes negative and HP drops to or below the specified threshold.
+      [*](Priority 4) Mana Threshold: Stop when stamina becomes negative and HP is zero and mana begins to take damage, preventing Mana Body deaths.
+      [/list]
+
     [*]Fully configurable through the in-game Mod Options menu or config file.
-    [*]Compatible with existing save files.
-    [*]Includes localization for English, Japanese, and Chinese.
     [/list]
     
     [h1] Compatibility [/h1]
@@ -32,22 +45,33 @@
     [h1] Configuration File Location [/h1]
     If needed, users can also edit the configuration file directly:
     [code] Steam\steamapps\common\Elin\BepInEx\config\omegaplatinum.elin.staminaactionstop.cfg [/code]
-
-    [img]https://steamuserimages-a.akamaihd.net/ugc/5163648045308568/FF3031BA41D0C9D137FD99DAF54E949FF7555FEE/?imw=5000&amp;imh=5000&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=false.png[/img]
-
-    Supports Game Version: 0.23.67
+    
+    [img] https://img.shields.io/badge/Supports%20Game%20Version-EA%2023.229%20Stable-green [/img]
 
     [h1] 注意 [/h1]
     複数のアイテムを一度にクラフトする場合（例：999個の釣り餌）、消費スタミナが一度にしきい値を超えることがあり、このMODがアクションを停止しない場合があります。
 
     [h1] 特徴 [/h1]
     [list]
-    [*]スタミナが指定されたしきい値を下回ると、自動的にアクションを停止します。
-    [*]「疲労 (1)」や「過労 (0)」フェーズを基にしたしきい値もサポートしています。
-    [*]しきい値が有効な場合、スタミナの正確な値が優先されます。
-    [*]ゲーム内のMod Optionsメニューまたは設定ファイルでカスタマイズ可能です。
-    [*]既存のセーブデータと互換性があります。
-    [*]英語、日本語、中国語の多言語サポートを提供します。
+    [*]安全モードは、スタミナが低いときに行動開始前または行動中のアクションを保護します。
+    [*]アクションを停止させるには、どちらか一方のモードを有効にする必要があります。
+    [*][b]二つの安全モード[/b]
+      [list]
+      [*]スタミナが低いとき、[u]行動開始前に[/u]アクションを停止します。ハードコアや永久死プレイに推奨。スタミナを消費しない行動も停止される場合があります。
+      [*]行動中にスタミナが低下した場合、[u]途中で[/u]アクションを停止します。
+      [/list]
+
+    [*][b]しきい値による保護[/b]
+      [list]
+      [*]しきい値保護は、指定条件に達した際に自動で行動を停止します。
+      [*]複数の保護設定が有効な場合、優先度が最も高い条件が先に適用されます。
+      [*](優先度1) スタミナの数値しきい値: スタミナが設定された値のしきい値に達したときに停止します。
+      [*](優先度2) スタミナのフェーズしきい値: スタミナのフェーズが指定されたしきい値に達したときに停止します。
+      [*](優先度3) HPしきい値: スタミナがマイナスになり、HPが指定値以下になったときに停止します。
+      [*](優先度4) マナしきい値: スタミナがマイナスかつHPが0になり、マナがダメージを受け始めたときに停止します。「マナの体」特性による死亡を防止します。
+      [/list]
+
+    [*]ゲーム内のMod Optionsメニューまたは設定ファイルで完全にカスタマイズ可能です。
     [/list]
 
     [h1] 互換性 [/h1]
@@ -58,12 +82,10 @@
     [list]
     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3381182341]https://steamcommunity.com/sharedfiles/filedetails/?id=3381182341[/url]
     [/list]
-
-    [img]https://steamuserimages-a.akamaihd.net/ugc/5163648045310658/2B3456088F6E089470A93787586CE2082AAF277C/?imw=5000&amp;imh=5000&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=false.png[/img]
-
-    対応ゲームバージョン: 0.23.67
+    
+    [img] https://img.shields.io/badge/対応ゲームバージョン対応ゲームバージョン-EA%2023.229%20Stable-green [/img]
   </description>
   <tags>QoL</tags>
   <visibility>Public</visibility>
-  <version>0.23.67</version>
+  <version>0.23.229</version>
 </Meta>

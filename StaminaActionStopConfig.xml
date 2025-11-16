@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ConfigLayoutSchema.xsd">
-    <hlayout id="hlayout01">
+    <hlayout id="hlayout02">
+        <vlayout id="vlayout03" border="true">
+            <title>title01</title>
+    
+            <toggle id="enablePreActionCheckToggle">
+                <contentId>toggle01</contentId>
+                <tooltip>tooltip01</tooltip>
+            </toggle>
+    
+            <toggle id="enableStaminaCheckToggle">
+                <contentId>toggle02</contentId>
+                <tooltip>tooltip02</tooltip>
+            </toggle>
+        </vlayout>
+
         <vlayout id="vlayout01" border="true">
             <toggle id="valueToggle">
                 <contentId>stamina.toggle.content01</contentId>
@@ -24,6 +38,9 @@
                 </choice>
             </one_choice>
         </vlayout>
+    </hlayout>
+    
+    <hlayout id="hlayout01">
         <vlayout id="vlayout02" border="true">
             <toggle id="phaseToggle">
                 <contentId>stamina.toggle.content02</contentId>
@@ -36,6 +53,74 @@
                 </choice>
                 <choice>
                     <contentId>dropdown.item02</contentId>
+                </choice>
+            </one_choice>
+        </vlayout>
+
+        <vlayout id="vlayout04" border="true">
+            <toggle id="enableHpThresholdValueToggle">
+                <contentId>toggle03</contentId>
+                <tooltip>tooltip03</tooltip>
+            </toggle>
+            <topic>topic04</topic>
+            <slider id="slider02" min="0" max="0" buttons="true">0</slider>
+            <topic>topic02</topic>
+            <one_choice id="dropdown03" type="dropdown">
+                <choice>
+                    <contentId>1</contentId>
+                </choice>
+                <choice>
+                    <contentId>10</contentId>
+                </choice>
+                <choice>
+                    <contentId>100</contentId>
+                </choice>
+                <choice>
+                    <contentId>1000</contentId>
+                </choice>
+                <choice>
+                    <contentId>10000</contentId>
+                </choice>
+                <choice>
+                    <contentId>100000</contentId>
+                </choice>
+                <choice>
+                    <contentId>1000000</contentId>
+                </choice>
+            </one_choice>
+        </vlayout>
+    </hlayout>
+
+    <hlayout id="hlayout03">
+        <vlayout id="vlayout05" border="true">
+            <toggle id="enableMpThresholdValueToggle">
+                <contentId>toggle04</contentId>
+                <tooltip>tooltip04</tooltip>
+            </toggle>
+            <topic>topic05</topic>
+            <slider id="slider03" min="0" max="0" buttons="true">0</slider>
+            <topic>topic02</topic>
+            <one_choice id="dropdown04" type="dropdown">
+                <choice>
+                    <contentId>1</contentId>
+                </choice>
+                <choice>
+                    <contentId>10</contentId>
+                </choice>
+                <choice>
+                    <contentId>100</contentId>
+                </choice>
+                <choice>
+                    <contentId>1000</contentId>
+                </choice>
+                <choice>
+                    <contentId>10000</contentId>
+                </choice>
+                <choice>
+                    <contentId>100000</contentId>
+                </choice>
+                <choice>
+                    <contentId>1000000</contentId>
                 </choice>
             </one_choice>
         </vlayout>

@@ -11,5 +11,12 @@ namespace StaminaActionStop
         {
             StatsStaminaPatch.ModPostfix(__instance: __instance);
         }
+        
+        [HarmonyPostfix]
+        [HarmonyPatch(declaringType: typeof(AIAct), methodName: nameof(AIAct.Start))]
+        public static void AIActStart(AIAct __instance)
+        {
+            AIActPatch.StartPostfix(__instance: __instance);
+        }
     }
 }
