@@ -81,6 +81,10 @@ namespace StaminaActionStop.UI
                 
                 var slider = builder.GetPreBuild<OptSlider>(id: "slider01");
                 slider.Title = StaminaActionStopConfig.staminaThresholdValue.Value.ToString();
+                if (EClass.core.IsGameStarted == true)
+                {
+                    slider.Max = (float)EClass.pc?._maxStamina;
+                }
                 slider.Value = StaminaActionStopConfig.staminaThresholdValue.Value;
                 slider.Step = 1;
                 slider.OnValueChanged += v =>

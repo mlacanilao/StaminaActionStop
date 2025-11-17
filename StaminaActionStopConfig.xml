@@ -63,7 +63,7 @@
                 <tooltip>tooltip03</tooltip>
             </toggle>
             <topic>topic04</topic>
-            <slider id="slider02" min="0" max="0" buttons="true">0</slider>
+            <slider id="slider02" min="0" max="9999" buttons="true">0</slider>
             <topic>topic02</topic>
             <one_choice id="dropdown03" type="dropdown">
                 <choice>
@@ -98,7 +98,7 @@
                 <tooltip>tooltip04</tooltip>
             </toggle>
             <topic>topic05</topic>
-            <slider id="slider03" min="0" max="0" buttons="true">0</slider>
+            <slider id="slider03" min="0" max="9999" buttons="true">0</slider>
             <topic>topic02</topic>
             <one_choice id="dropdown04" type="dropdown">
                 <choice>
