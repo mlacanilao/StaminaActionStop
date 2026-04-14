@@ -1,22 +1,28 @@
 using StaminaActionStop.Patches;
 using HarmonyLib;
 
-namespace StaminaActionStop
+namespace StaminaActionStop;
+
+internal static class Patcher
 {
-    public class Patcher
+    [HarmonyPrefix]
+    [HarmonyPatch(declaringType: typeof(StatsStamina), methodName: nameof(StatsStamina.Mod))]
+    internal static void StatsStaminaModPrefix(StatsStamina __instance, out int __state)
     {
-        [HarmonyPostfix]
-        [HarmonyPatch(declaringType: typeof(StatsStamina), methodName: nameof(StatsStamina.Mod))]
-        public static void StatsStaminaMod(StatsStamina __instance)
-        {
-            StatsStaminaPatch.ModPostfix(__instance: __instance);
-        }
-        
-        [HarmonyPostfix]
-        [HarmonyPatch(declaringType: typeof(AIAct), methodName: nameof(AIAct.Start))]
-        public static void AIActStart(AIAct __instance)
-        {
-            AIActPatch.StartPostfix(__instance: __instance);
-        }
+        __state = __instance.value;
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch(declaringType: typeof(StatsStamina), methodName: nameof(StatsStamina.Mod))]
+    internal static void StatsStaminaMod(StatsStamina __instance, int a, int __state)
+    {
+        StatsStaminaPatch.ModPostfix(__instance: __instance, a: a, previousStaminaValue: __state);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(declaringType: typeof(AIAct), methodName: nameof(AIAct.Start))]
+    internal static bool AIActStart(AIAct __instance)
+    {
+        return AIActPatch.StartPrefix(__instance: __instance);
     }
 }

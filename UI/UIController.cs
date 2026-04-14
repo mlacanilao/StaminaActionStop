@@ -1,180 +1,267 @@
 using System.Collections.Generic;
-using EvilMask.Elin.ModOptions;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using BepInEx;
+using EvilMask.Elin.ModOptions;
 using EvilMask.Elin.ModOptions.UI;
 using StaminaActionStop.Config;
 using UnityEngine;
 
-namespace StaminaActionStop.UI
-{
-    public static class UIController
-    {
-        public static void RegisterUI()
-        {
-            foreach (var obj in ModManager.ListPluginObject)
-            {
-                if (obj is BaseUnityPlugin plugin && plugin.Info.Metadata.GUID == ModInfo.ModOptionsGuid)
-                {
-                    var controller = ModOptionController.Register(guid: ModInfo.Guid, tooptipId: "mod.tooltip");
-                    
-                    var assemblyLocation = Path.GetDirectoryName(path: Assembly.GetExecutingAssembly().Location);
-                    if (assemblyLocation != null)
-                    {
-                        var xmlPath = Path.Combine(path1: assemblyLocation, path2: "StaminaActionStopConfig.xml");
-                        StaminaActionStopConfig.InitializeXmlPath(xmlPath: xmlPath);
-                        
-                        var xlsxPath = Path.Combine(path1: assemblyLocation, path2: "translations.xlsx");
-                        StaminaActionStopConfig.InitializeTranslationXlsxPath(xlsxPath: xlsxPath);
-                    }
+namespace StaminaActionStop.UI;
 
-                    if (File.Exists(path: StaminaActionStopConfig.XmlPath))
-                    {
-                        using (StreamReader sr = new StreamReader(path: StaminaActionStopConfig.XmlPath))
-                            controller.SetPreBuildWithXml(xml: sr.ReadToEnd());
-                    }
-                    
-                    if (File.Exists(path: StaminaActionStopConfig.TranslationXlsxPath))
-                    {
-                        controller.SetTranslationsFromXslx(path: StaminaActionStopConfig.TranslationXlsxPath);
-                    }
-                    
-                    RegisterEvents(controller: controller);
-                }
-            }
-        }
-        
-        private static void RegisterEvents(ModOptionController controller)
+public static class UIController
+{
+    private static readonly Dictionary<int, int> PhaseDropdownMapping = new Dictionary<int, int>
+    {
+        { 0, StatsStamina.Tired },
+        { 1, StatsStamina.VeryTired },
+        { 2, StatsStamina.Exhausted }
+    };
+
+    private static readonly Dictionary<int, int> ReversePhaseDropdownMapping =
+        PhaseDropdownMapping.ToDictionary(keySelector: kv => kv.Value, elementSelector: kv => kv.Key);
+
+    public static void RegisterUI()
+    {
+        var controller = ModOptionController.Register(guid: ModInfo.Guid, tooptipId: "mod.tooltip");
+        if (controller == null)
         {
-            controller.OnBuildUI += builder =>
+            StaminaActionStop.LogError(message: "Failed to register Mod Options controller.");
+            return;
+        }
+
+        var assemblyLocation = Path.GetDirectoryName(path: Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+        var xmlPath = Path.Combine(path1: assemblyLocation, path2: "StaminaActionStopConfig.xml");
+        var xlsxPath = Path.Combine(path1: assemblyLocation, path2: "translations.xlsx");
+
+        StaminaActionStopConfig.InitializeXmlPath(xmlPath: xmlPath);
+        StaminaActionStopConfig.InitializeTranslationXlsxPath(xlsxPath: xlsxPath);
+
+        if (File.Exists(path: StaminaActionStopConfig.XmlPath))
+        {
+            controller.SetPreBuildWithXml(xml: File.ReadAllText(path: StaminaActionStopConfig.XmlPath));
+        }
+        else
+        {
+            StaminaActionStop.LogError(message: $"Mod Options XML not found: {xmlPath}");
+        }
+
+        if (File.Exists(path: StaminaActionStopConfig.TranslationXlsxPath))
+        {
+            controller.SetTranslationsFromXslx(path: StaminaActionStopConfig.TranslationXlsxPath);
+        }
+        else
+        {
+            StaminaActionStop.LogError(message: $"Mod Options translations not found: {xlsxPath}");
+        }
+
+        RegisterEvents(controller: controller);
+    }
+
+    private static void RegisterEvents(ModOptionController controller)
+    {
+        controller.OnBuildUI += builder =>
+        {
+            var hlayout = builder.GetPreBuild<OptHLayout>(id: "hlayout01");
+            if (hlayout != null)
             {
-                var hlayout = builder.GetPreBuild<OptHLayout>(id: "hlayout01");
                 hlayout.Base.childForceExpandHeight = false;
-                
-                var vlayout01 = builder.GetPreBuild<OptVLayout>(id: "vlayout01");
+            }
+
+            var vlayout01 = builder.GetPreBuild<OptVLayout>(id: "vlayout01");
+            if (vlayout01 != null)
+            {
                 vlayout01.Base.childForceExpandHeight = false;
-                
-                var vlayout02 = builder.GetPreBuild<OptVLayout>(id: "vlayout02");
+            }
+
+            var vlayout02 = builder.GetPreBuild<OptVLayout>(id: "vlayout02");
+            if (vlayout02 != null)
+            {
                 vlayout02.Base.childForceExpandHeight = false;
-                
-                var enablePreActionCheckToggle = builder.GetPreBuild<OptToggle>(id: "enablePreActionCheckToggle");
-                enablePreActionCheckToggle.Checked = StaminaActionStopConfig.enablePreActionCheck.Value;
+            }
+
+            var enablePreActionCheckToggle = GetRequiredPreBuild<OptToggle>(builder: builder, id: "enablePreActionCheckToggle");
+            if (enablePreActionCheckToggle != null)
+            {
+                enablePreActionCheckToggle.Checked = StaminaActionStopConfig.EnablePreActionCheck.Value;
                 enablePreActionCheckToggle.OnValueChanged += isChecked =>
                 {
-                    StaminaActionStopConfig.enablePreActionCheck.Value = isChecked;
+                    StaminaActionStopConfig.EnablePreActionCheck.Value = isChecked;
                 };
-                
-                var enableStaminaCheckToggle = builder.GetPreBuild<OptToggle>(id: "enableStaminaCheckToggle");
-                enableStaminaCheckToggle.Checked = StaminaActionStopConfig.enableStaminaCheck.Value;
+            }
+
+            var enableStaminaCheckToggle = GetRequiredPreBuild<OptToggle>(builder: builder, id: "enableStaminaCheckToggle");
+            if (enableStaminaCheckToggle != null)
+            {
+                enableStaminaCheckToggle.Checked = StaminaActionStopConfig.EnableStaminaCheck.Value;
                 enableStaminaCheckToggle.OnValueChanged += isChecked =>
                 {
-                    StaminaActionStopConfig.enableStaminaCheck.Value = isChecked;
+                    StaminaActionStopConfig.EnableStaminaCheck.Value = isChecked;
                 };
-                
-                var valueToggle = builder.GetPreBuild<OptToggle>(id: "valueToggle");
-                valueToggle.Checked = StaminaActionStopConfig.enableThresholdValue.Value;
+            }
+
+            var valueToggle = GetRequiredPreBuild<OptToggle>(builder: builder, id: "valueToggle");
+            if (valueToggle != null)
+            {
+                valueToggle.Checked = StaminaActionStopConfig.EnableThresholdValue.Value;
                 valueToggle.OnValueChanged += isChecked =>
                 {
-                    StaminaActionStopConfig.enableThresholdValue.Value = isChecked;
+                    StaminaActionStopConfig.EnableThresholdValue.Value = isChecked;
                 };
-                
-                var slider = builder.GetPreBuild<OptSlider>(id: "slider01");
-                slider.Title = StaminaActionStopConfig.staminaThresholdValue.Value.ToString();
-                if (EClass.core.IsGameStarted == true)
+            }
+
+            var staminaThresholdSlider = GetRequiredPreBuild<OptSlider>(builder: builder, id: "slider01");
+            if (staminaThresholdSlider != null)
+            {
+                staminaThresholdSlider.Title = StaminaActionStopConfig.StaminaThresholdValue.Value.ToString();
+                if (EClass.core.IsGameStarted == true &&
+                    EClass.pc != null)
                 {
-                    slider.Max = (float)EClass.pc?._maxStamina;
+                    staminaThresholdSlider.Max = EClass.pc._maxStamina;
                 }
-                slider.Value = StaminaActionStopConfig.staminaThresholdValue.Value;
-                slider.Step = 1;
-                slider.OnValueChanged += v =>
+
+                staminaThresholdSlider.Value = StaminaActionStopConfig.StaminaThresholdValue.Value;
+                staminaThresholdSlider.Step = 1;
+                staminaThresholdSlider.OnValueChanged += value =>
                 {
-                    slider.Title = v.ToString();
-                    StaminaActionStopConfig.staminaThresholdValue.Value = (int)v;
+                    staminaThresholdSlider.Title = value.ToString();
+                    StaminaActionStopConfig.StaminaThresholdValue.Value = (int)value;
                 };
-                
-                var dropdown = builder.GetPreBuild<OptDropdown>(id: "dropdown01");
-                dropdown.OnValueChanged += d =>
+            }
+
+            var staminaThresholdDropdown = GetRequiredPreBuild<OptDropdown>(builder: builder, id: "dropdown01");
+            if (staminaThresholdDropdown != null &&
+                staminaThresholdSlider != null)
+            {
+                staminaThresholdDropdown.OnValueChanged += index =>
                 {
-                    slider.Step = Mathf.Pow(f: 10, p: d);
+                    staminaThresholdSlider.Step = Mathf.Pow(f: 10, p: index);
                 };
-                
-                var phaseToggle = builder.GetPreBuild<OptToggle>(id: "phaseToggle");
-                phaseToggle.Checked = StaminaActionStopConfig.enableThresholdPhase.Value;
+            }
+
+            var phaseToggle = GetRequiredPreBuild<OptToggle>(builder: builder, id: "phaseToggle");
+            if (phaseToggle != null)
+            {
+                phaseToggle.Checked = StaminaActionStopConfig.EnableThresholdPhase.Value;
                 phaseToggle.OnValueChanged += isChecked =>
                 {
-                    StaminaActionStopConfig.enableThresholdPhase.Value = isChecked;
+                    StaminaActionStopConfig.EnableThresholdPhase.Value = isChecked;
                 };
-                
-                var dropdownMapping = new Dictionary<int, int>
+            }
+
+            var phaseDropdown = GetRequiredPreBuild<OptDropdown>(builder: builder, id: "dropdown02");
+            if (phaseDropdown != null)
+            {
+                if (ReversePhaseDropdownMapping.TryGetValue(
+                        key: StaminaActionStopConfig.StaminaThresholdPhase.Value,
+                        value: out int dropdownIndex))
                 {
-                    { 0, 1 }, // Tired -> 1
-                    { 1, 0 }  // Exhausted -> 0
-                };
-                
-                var dropdown02 = builder.GetPreBuild<OptDropdown>(id: "dropdown02");
-                dropdown02.OnValueChanged += d =>
+                    phaseDropdown.Value = dropdownIndex;
+                }
+                else
                 {
-                    if (dropdownMapping.TryGetValue(key: d, value: out int mappedValue))
+                    phaseDropdown.Value = ReversePhaseDropdownMapping[key: StatsStamina.Tired];
+                    StaminaActionStop.LogError(
+                        message: $"Unsupported stamina threshold phase in config: {StaminaActionStopConfig.StaminaThresholdPhase.Value}. Defaulting UI to Tired.");
+                }
+
+                phaseDropdown.OnValueChanged += index =>
+                {
+                    if (PhaseDropdownMapping.TryGetValue(key: index, value: out int mappedValue))
                     {
-                        StaminaActionStopConfig.staminaThresholdPhase.Value = mappedValue;
+                        StaminaActionStopConfig.StaminaThresholdPhase.Value = mappedValue;
                     }
                 };
-                
-                var enableHpThresholdValueToggle = builder.GetPreBuild<OptToggle>(id: "enableHpThresholdValueToggle");
-                enableHpThresholdValueToggle.Checked = StaminaActionStopConfig.enableHpThresholdValue.Value;
+            }
+
+            var enableHpThresholdValueToggle = GetRequiredPreBuild<OptToggle>(builder: builder, id: "enableHpThresholdValueToggle");
+            if (enableHpThresholdValueToggle != null)
+            {
+                enableHpThresholdValueToggle.Checked = StaminaActionStopConfig.EnableHpThresholdValue.Value;
                 enableHpThresholdValueToggle.OnValueChanged += isChecked =>
                 {
-                    StaminaActionStopConfig.enableHpThresholdValue.Value = isChecked;
+                    StaminaActionStopConfig.EnableHpThresholdValue.Value = isChecked;
                 };
-                
-                var slider02 = builder.GetPreBuild<OptSlider>(id: "slider02");
-                slider02.Title = StaminaActionStopConfig.hpThresholdValue.Value.ToString();
-                if (EClass.core.IsGameStarted == true)
+            }
+
+            var hpThresholdSlider = GetRequiredPreBuild<OptSlider>(builder: builder, id: "slider02");
+            if (hpThresholdSlider != null)
+            {
+                hpThresholdSlider.Title = StaminaActionStopConfig.HpThresholdValue.Value.ToString();
+                if (EClass.core.IsGameStarted == true &&
+                    EClass.pc != null)
                 {
-                    slider02.Max = (float)EClass.pc?.MaxHP;
+                    hpThresholdSlider.Max = EClass.pc.MaxHP;
                 }
-                slider02.Value = StaminaActionStopConfig.hpThresholdValue.Value;
-                slider02.Step = 1;
-                slider02.OnValueChanged += v =>
+
+                hpThresholdSlider.Value = StaminaActionStopConfig.HpThresholdValue.Value;
+                hpThresholdSlider.Step = 1;
+                hpThresholdSlider.OnValueChanged += value =>
                 {
-                    slider02.Title = v.ToString();
-                    StaminaActionStopConfig.hpThresholdValue.Value = (int)v;
+                    hpThresholdSlider.Title = value.ToString();
+                    StaminaActionStopConfig.HpThresholdValue.Value = (int)value;
                 };
-                
-                var dropdown03 = builder.GetPreBuild<OptDropdown>(id: "dropdown03");
-                dropdown03.OnValueChanged += d =>
+            }
+
+            var hpThresholdDropdown = GetRequiredPreBuild<OptDropdown>(builder: builder, id: "dropdown03");
+            if (hpThresholdDropdown != null &&
+                hpThresholdSlider != null)
+            {
+                hpThresholdDropdown.OnValueChanged += index =>
                 {
-                    slider02.Step = Mathf.Pow(f: 10, p: d);
+                    hpThresholdSlider.Step = Mathf.Pow(f: 10, p: index);
                 };
-                
-                var enableMpThresholdValueToggle = builder.GetPreBuild<OptToggle>(id: "enableMpThresholdValueToggle");
-                enableMpThresholdValueToggle.Checked = StaminaActionStopConfig.enableManaThresholdValue.Value;
+            }
+
+            var enableMpThresholdValueToggle = GetRequiredPreBuild<OptToggle>(builder: builder, id: "enableMpThresholdValueToggle");
+            if (enableMpThresholdValueToggle != null)
+            {
+                enableMpThresholdValueToggle.Checked = StaminaActionStopConfig.EnableManaThresholdValue.Value;
                 enableMpThresholdValueToggle.OnValueChanged += isChecked =>
                 {
-                    StaminaActionStopConfig.enableManaThresholdValue.Value = isChecked;
+                    StaminaActionStopConfig.EnableManaThresholdValue.Value = isChecked;
                 };
-                
-                var slider03 = builder.GetPreBuild<OptSlider>(id: "slider03");
-                slider03.Title = StaminaActionStopConfig.manaThresholdValue.Value.ToString();
-                if (EClass.core.IsGameStarted == true)
+            }
+
+            var manaThresholdSlider = GetRequiredPreBuild<OptSlider>(builder: builder, id: "slider03");
+            if (manaThresholdSlider != null)
+            {
+                manaThresholdSlider.Title = StaminaActionStopConfig.ManaThresholdValue.Value.ToString();
+                if (EClass.core.IsGameStarted == true &&
+                    EClass.pc?.mana != null)
                 {
-                    slider03.Max = (float)EClass.pc?.mana?.max;
+                    manaThresholdSlider.Max = EClass.pc.mana.max;
                 }
-                slider03.Value = StaminaActionStopConfig.manaThresholdValue.Value;
-                slider03.Step = 1;
-                slider03.OnValueChanged += v =>
+
+                manaThresholdSlider.Value = StaminaActionStopConfig.ManaThresholdValue.Value;
+                manaThresholdSlider.Step = 1;
+                manaThresholdSlider.OnValueChanged += value =>
                 {
-                    slider03.Title = v.ToString();
-                    StaminaActionStopConfig.manaThresholdValue.Value = (int)v;
+                    manaThresholdSlider.Title = value.ToString();
+                    StaminaActionStopConfig.ManaThresholdValue.Value = (int)value;
                 };
-                
-                var dropdown04 = builder.GetPreBuild<OptDropdown>(id: "dropdown04");
-                dropdown04.OnValueChanged += d =>
+            }
+
+            var manaThresholdDropdown = GetRequiredPreBuild<OptDropdown>(builder: builder, id: "dropdown04");
+            if (manaThresholdDropdown != null &&
+                manaThresholdSlider != null)
+            {
+                manaThresholdDropdown.OnValueChanged += index =>
                 {
-                    slider03.Step = Mathf.Pow(f: 10, p: d);
+                    manaThresholdSlider.Step = Mathf.Pow(f: 10, p: index);
                 };
-            };
+            }
+        };
+    }
+
+    private static T? GetRequiredPreBuild<T>(OptionUIBuilder builder, string id) where T : OptUIElement
+    {
+        T? element = builder.GetPreBuild<T>(id: id);
+        if (element == null)
+        {
+            StaminaActionStop.LogError(message: $"Missing Mod Options prebuilt element: {id}");
         }
+
+        return element;
     }
 }

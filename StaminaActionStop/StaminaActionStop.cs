@@ -1,68 +1,83 @@
-﻿using System;
-using System.Linq;
+using System;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using HarmonyLib;
 using StaminaActionStop.Config;
 
-namespace StaminaActionStop
+namespace StaminaActionStop;
+
+internal static class ModInfo
 {
-    internal static class ModInfo
+    internal const string Guid = "omegaplatinum.elin.staminaactionstop";
+    internal const string Name = "Stamina Action Stop";
+    internal const string Version = "2.0.0";
+    internal const string ModOptionsGuid = "evilmask.elinplugins.modoptions";
+}
+
+[BepInPlugin(GUID: ModInfo.Guid, Name: ModInfo.Name, Version: ModInfo.Version)]
+internal class StaminaActionStop : BaseUnityPlugin
+{
+    internal static StaminaActionStop? Instance { get; private set; }
+
+    private void Awake()
     {
-        internal const string Guid = "omegaplatinum.elin.staminaactionstop";
-        internal const string Name = "Stamina Action Stop";
-        internal const string Version = "2.0.0.0";
-        internal const string ModOptionsGuid = "evilmask.elinplugins.modoptions";
-        internal const string ModOptionsAssemblyName = "ModOptions";
+        Instance = this;
+        StaminaActionStopConfig.LoadConfig(config: Config);
+        Harmony.CreateAndPatchAll(type: typeof(Patcher), harmonyInstanceId: ModInfo.Guid);
+
+        if (HasModOptionsPlugin() == false)
+        {
+            return;
+        }
+
+        try
+        {
+            UI.UIController.RegisterUI();
+        }
+        catch (Exception ex)
+        {
+            LogError(message: $"An error occurred during UI registration: {ex}");
+        }
     }
 
-    [BepInPlugin(GUID: ModInfo.Guid, Name: ModInfo.Name, Version: ModInfo.Version)]
-    internal class StaminaActionStop : BaseUnityPlugin
+    internal static void LogDebug(object message, [CallerMemberName] string caller = "")
     {
-        internal static StaminaActionStop Instance { get; private set; }
-        
-        private void Start()
-        {
-            Instance = this;
-            
-            StaminaActionStopConfig.LoadConfig(config: Config);
-            
-            Harmony.CreateAndPatchAll(type: typeof(Patcher), harmonyInstanceId: ModInfo.Guid);
-            
-            if (IsModOptionsInstalled())
-            {
-                try
-                {
-                    UI.UIController.RegisterUI();
-                }
-                catch (Exception ex)
-                {
-                    Log(payload: $"An error occurred during UI registration: {ex.Message}");
-                }
-            }
-            else
-            {
-                Log(payload: "Mod Options is not installed. Skipping UI registration.");
-            }
-        }
+        Instance?.Logger.LogDebug(data: $"[{caller}] {message}");
+    }
 
-        internal static void Log(object payload)
+    internal static void LogInfo(object message)
+    {
+        Instance?.Logger.LogInfo(data: message);
+    }
+
+    internal static void LogError(object message)
+    {
+        Instance?.Logger.LogError(data: message);
+    }
+
+    private static bool HasModOptionsPlugin()
+    {
+        try
         {
-            Instance.Logger.LogInfo(data: payload);
+            foreach (var obj in ModManager.ListPluginObject)
+            {
+                if (obj is not BaseUnityPlugin plugin)
+                {
+                    continue;
+                }
+
+                if (plugin.Info.Metadata.GUID == ModInfo.ModOptionsGuid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
-        
-        private bool IsModOptionsInstalled()
+        catch (Exception ex)
         {
-            try
-            {
-                return AppDomain.CurrentDomain
-                    .GetAssemblies()
-                    .Any(predicate: assembly => assembly.GetName().Name == ModInfo.ModOptionsAssemblyName);
-            }
-            catch (Exception ex)
-            {
-                Log(payload: $"Error while checking for Mod Options: {ex.Message}");
-                return false;
-            }
+            LogError(message: $"Error while checking for Mod Options: {ex}");
+            return false;
         }
     }
 }

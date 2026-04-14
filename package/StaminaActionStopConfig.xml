@@ -54,6 +54,9 @@
                 <choice>
                     <contentId>dropdown.item02</contentId>
                 </choice>
+                <choice>
+                    <contentId>dropdown.item03</contentId>
+                </choice>
             </one_choice>
         </vlayout>
 

@@ -8,7 +8,7 @@
     スタミナが設定されたしきい値またはフェーズに達すると、現在のアクションを停止します。
 
     [h1] Note [/h1]
-    Please note that this mod may not stop actions when crafting multiple items simultaneously (e.g., crafting 999 fishing bait), as the total stamina consumed might bypass the threshold in a single action.
+    Please note that some batch crafting actions (e.g., crafting 999 fishing bait) may still bypass the during-action stop if a single craft step crosses the threshold at once. The pre-action safety mode checks your current thresholds before the batch begins, while the during-action mode respects vanilla stamina-cost adjustments such as Farming Legs after the actual stamina change is applied.
 
     [h1] Features [/h1]
     [list]
@@ -46,10 +46,10 @@
     If needed, users can also edit the configuration file directly:
     [code] Steam\steamapps\common\Elin\BepInEx\config\omegaplatinum.elin.staminaactionstop.cfg [/code]
     
-    [img] https://img.shields.io/badge/Supports%20Game%20Version-EA%2023.229%20Stable-green [/img]
+    [img] https://img.shields.io/badge/Supports%20Game%20Version-EA%2023.295%20Stable-green [/img]
 
     [h1] 注意 [/h1]
-    複数のアイテムを一度にクラフトする場合（例：999個の釣り餌）、消費スタミナが一度にしきい値を超えることがあり、このMODがアクションを停止しない場合があります。
+    一部の一括クラフト（例：釣り餌を999個作成）は、1回のクラフト処理でしきい値をまたぐと行動中停止をすり抜ける場合があります。開始前安全モードはバッチ開始前に現在のしきい値を確認し、行動中安全モードは「農夫の足腰」などのバニラのスタミナ消費補正を実際のスタミナ変化後に反映して判定します。
 
     [h1] 特徴 [/h1]
     [list]
@@ -77,15 +77,15 @@
     [h1] 互換性 [/h1]
     このMODは既存のセーブデータと互換性があり、特別な設定は不要です。
 
-    [h1] 必須MOD [/h1]
-    このMODは[b]Mod Options[/b]MODが必要です。ただし、Configメニューへのアクセスのためだけです。主要な機能はこれなしでも動作します。以下のリンクから[b]Mod Options[/b]MODをサブスクライブしてください：
+    [h1] オプションMOD [/h1]
+    [b]Mod Options[/b]MODはConfigメニューにアクセスする場合のみ必要です。主要な機能はこれなしでも動作します。メニューから設定したい場合は、以下のリンクから[b]Mod Options[/b]MODをサブスクライブしてください：
     [list]
     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3381182341]https://steamcommunity.com/sharedfiles/filedetails/?id=3381182341[/url]
     [/list]
     
-    [img] https://img.shields.io/badge/対応ゲームバージョン対応ゲームバージョン-EA%2023.229%20Stable-green [/img]
+    [img] https://img.shields.io/badge/対応ゲームバージョン-EA%2023.295%20Stable-green [/img]
   </description>
   <tags>QoL</tags>
   <visibility>Public</visibility>
-  <version>0.23.229</version>
+  <version>0.23.295</version>
 </Meta>

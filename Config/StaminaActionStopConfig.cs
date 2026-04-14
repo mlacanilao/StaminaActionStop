@@ -1,29 +1,27 @@
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using BepInEx.Configuration;
 
-namespace StaminaActionStop.Config
+namespace StaminaActionStop.Config;
+
+internal static class StaminaActionStopConfig
 {
-    internal static class StaminaActionStopConfig
+    internal static ConfigEntry<bool> EnablePreActionCheck = null!;
+    internal static ConfigEntry<bool> EnableStaminaCheck = null!;
+    internal static ConfigEntry<bool> EnableThresholdValue = null!;
+    internal static ConfigEntry<int> StaminaThresholdValue = null!;
+    internal static ConfigEntry<bool> EnableThresholdPhase = null!;
+    internal static ConfigEntry<int> StaminaThresholdPhase = null!;
+    internal static ConfigEntry<bool> EnableHpThresholdValue = null!;
+    internal static ConfigEntry<int> HpThresholdValue = null!;
+    internal static ConfigEntry<bool> EnableManaThresholdValue = null!;
+    internal static ConfigEntry<int> ManaThresholdValue = null!;
+
+    internal static string XmlPath { get; private set; } = string.Empty;
+    internal static string TranslationXlsxPath { get; private set; } = string.Empty;
+
+    internal static void LoadConfig(ConfigFile config)
     {
-        internal static ConfigEntry<bool> enablePreActionCheck;
-        internal static ConfigEntry<bool> enableStaminaCheck;
-        internal static ConfigEntry<bool> enableThresholdValue;
-        internal static ConfigEntry<int> staminaThresholdValue;
-        internal static ConfigEntry<bool> enableThresholdPhase;
-        internal static ConfigEntry<int> staminaThresholdPhase;
-        internal static ConfigEntry<bool> enableHpThresholdValue;
-        internal static ConfigEntry<int> hpThresholdValue;
-        internal static ConfigEntry<bool> enableManaThresholdValue;
-        internal static ConfigEntry<int> manaThresholdValue;
-        
-        internal static string XmlPath { get; private set; }
-        internal static string TranslationXlsxPath { get; private set; }
-        
-        internal static void LoadConfig(ConfigFile config)
-        {
-            enablePreActionCheck = config.Bind(
+            EnablePreActionCheck = config.Bind(
                 section: ModInfo.Name,
                 key: "Enable Pre-Action Check",
                 defaultValue: false,
@@ -33,7 +31,7 @@ namespace StaminaActionStop.Config
                     "体力过低时在动作开始前停止行动。适用于硬核或永久死亡模式。某些不消耗体力的动作也可能会被停止。"
             );
 
-            enableStaminaCheck = config.Bind(
+            EnableStaminaCheck = config.Bind(
                 section: ModInfo.Name,
                 key: "Enable Stamina Check",
                 defaultValue: true,
@@ -42,7 +40,7 @@ namespace StaminaActionStop.Config
                              "在行动过程中体力下降到阈值以下时停止行动。"
             );
 
-            enableThresholdValue = config.Bind(
+            EnableThresholdValue = config.Bind(
                 section: ModInfo.Name,
                 key: "Enable Threshold Value",
                 defaultValue: true,
@@ -51,7 +49,7 @@ namespace StaminaActionStop.Config
                              "启用体力阈值选项。"
             );
             
-            staminaThresholdValue = config.Bind(
+            StaminaThresholdValue = config.Bind(
                 section: ModInfo.Name,
                 key: "Stamina Threshold Value",
                 defaultValue: 0,
@@ -60,7 +58,7 @@ namespace StaminaActionStop.Config
                              "体力阈值，低于此值时会停止当前动作。"
             );
 
-            enableThresholdPhase = config.Bind(
+            EnableThresholdPhase = config.Bind(
                 section: ModInfo.Name,
                 key: "Enable Threshold Phase",
                 defaultValue: false,
@@ -69,16 +67,16 @@ namespace StaminaActionStop.Config
                              "启用体力阶段阈值选项。"
             );
             
-            staminaThresholdPhase = config.Bind(
+            StaminaThresholdPhase = config.Bind(
                 section: ModInfo.Name,
                 key: "Stamina Threshold Phase",
                 defaultValue: 1,
-                description: "The phase-based stamina threshold at which actions will stop. Set to 1 for 'Tired' phase or 0 for 'Exhausted' phase.\n" +
-                             "スタミナフェーズのしきい値。1は「疲労」、0は「過労」を示し、このフェーズ以下ではアクションが停止します。\n" +
-                             "体力阶段阈值。设置为 1 表示「疲劳」，设置为 0 表示「过劳」，低于此阶段时会停止当前动作。"
+                description: "The phase-based stamina threshold at which actions will stop. Set to 2 for 'Tired', 1 for 'Very Tired', or 0 for 'Exhausted'.\n" +
+                             "アクションを停止するスタミナフェーズのしきい値です。2 は「疲労」、1 は「かなり疲労」、0 は「過労」を示し、このフェーズ以下でアクションを停止します。\n" +
+                             "动作停止的体力阶段阈值。2 表示“疲劳”，1 表示“非常疲劳”，0 表示“过劳”；低于或等于该阶段时会停止当前动作。"
             );
             
-            enableHpThresholdValue = config.Bind(
+            EnableHpThresholdValue = config.Bind(
                 section: ModInfo.Name,
                 key: "Enable HP Threshold Value",
                 defaultValue: false,
@@ -87,7 +85,7 @@ namespace StaminaActionStop.Config
                              "启用生命值阈值选项。"
             );
             
-            hpThresholdValue = config.Bind(
+            HpThresholdValue = config.Bind(
                 section: ModInfo.Name,
                 key: "HP Threshold Value",
                 defaultValue: 1,
@@ -96,7 +94,7 @@ namespace StaminaActionStop.Config
                              "生命值阈值。耐力降至负数开始扣除生命值时，当生命值低于该值将停止行动。"
             );
             
-            enableManaThresholdValue = config.Bind(
+            EnableManaThresholdValue = config.Bind(
                 section: ModInfo.Name,
                 key: "Enable MP Threshold Value",
                 defaultValue: false,
@@ -105,7 +103,7 @@ namespace StaminaActionStop.Config
                              "启用法力阈值选项。"
             );
 
-            manaThresholdValue = config.Bind(
+            ManaThresholdValue = config.Bind(
                 section: ModInfo.Name,
                 key: "MP Threshold Value",
                 defaultValue: 1,
@@ -137,6 +135,5 @@ namespace StaminaActionStop.Config
             {
                 TranslationXlsxPath = string.Empty;
             }
-        }
     }
 }
